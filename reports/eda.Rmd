@@ -1,0 +1,63 @@
+---
+title: "EDA"
+output: html_notebook
+---
+
+```{r setup, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(here)
+theme_set(theme_bw())
+```
+
+
+```{r ler}
+diferencas = read_csv(here("data/hollywoodagegaps.csv"))
+glimpse(diferencas)
+```
+
+```{r}
+skimr::skim(diferencas)
+```
+
+## Algumas perguntas
+
+
+
+## Algumas respostas
+
+
+```{r}
+diferencas %>% 
+    ggplot(aes(x = same_sex, y = age_difference)) + 
+    geom_jitter(width = .1) 
+```
+
+```{r}
+diferencas %>% 
+    filter(!same_sex) %>% 
+    ggplot(aes(x = age_difference)) + 
+    geom_histogram(bins = 20, fill = "white", color = "darkorange")
+```
+
+```{r}
+diferencas %>% 
+    arrange(-age_difference) %>% 
+    slice(c(1:10, (n() - 10):n())) %>% 
+    ggplot(aes(x = reorder(movie_name, age_difference), y = age_difference)) + 
+    geom_point() + 
+    coord_flip()
+```
+
+```{r}
+diferencas %>% 
+    mutate(release_year = cut(release_year, 8)) %>% 
+    ggplot(aes(x = release_year, age_difference)) + 
+    geom_boxplot()
+```
+
+```{r}
+diferencas %>% 
+    ggplot(aes(x = actor_1_age, y = age_difference)) + 
+    geom_point(alpha = .5, size = .5)
+```
+
