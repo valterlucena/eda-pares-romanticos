@@ -20,3 +20,7 @@ install.packages(deps)
 * `code` - Scripts para ingerir e transformar os dados brutos, e funções fatoradas de relatórios
 * `data` - Dados depois de obtidos, organizados e transformados a partir da fonte original
 * `reports` - Notebooks com análises
+
+## Como começar
+
+(Instale as dependências e) Clone e abra `eda-pares-romanticos.Rproj`. Você pode começar alterando  `reports/eda.Rmd`.
