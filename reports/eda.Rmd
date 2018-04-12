@@ -3,17 +3,24 @@ title: "EDA"
 output: html_notebook
 ---
 
+# Análise das diferenças de idade em hollywood
+
 ```{r setup, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(here)
 theme_set(theme_bw())
 ```
 
+## Lendo os dados
+
+Dados são lidos do site *hollywoodagegaps*.
 
 ```{r ler}
 diferencas = read_csv(here("data/hollywoodagegaps.csv"))
 glimpse(diferencas)
 ```
+
+
 
 ```{r}
 skimr::skim(diferencas)
@@ -21,16 +28,63 @@ skimr::skim(diferencas)
 
 ## Algumas perguntas
 
+Maior diferença? 
+
+Diferença típica entre homens e mulheres 
+
+Quão frequente é que homens sejam mais velhos que as mulheres? (E vice versa)
+
+Ao longo dos anos, a diferença caiu? 
+
+Há mais/menos diferença de idade quando o casal é do mesmo sexo? 
 
 
 ## Algumas respostas
 
+*Maiores diferenças?*
+
+```{r}
+diferencas_pequeno = diferencas %>% 
+    sample_n(50)
+
+diferencas %>% 
+    filter(! same_sex) %>% 
+    ggplot(aes(x = "", 
+               y = age_difference)) + 
+    geom_jitter(width = .1, alpha = .6, size = .5) 
+    
+```
 
 ```{r}
 diferencas %>% 
-    ggplot(aes(x = same_sex, y = age_difference)) + 
-    geom_jitter(width = .1) 
+    filter(! same_sex) %>% 
+    arrange(age_difference) %>% 
+    slice(c(1:10, (n()-10):n())) %>% 
+    ggplot(aes(x = reorder(movie_name, age_difference), 
+               y = age_difference)) + 
+    geom_point() + 
+    coord_flip()
+    
 ```
+
+```{r}
+diferencas %>% 
+    arrange(age_difference) %>% 
+    slice(1)
+```
+
+
+## Futuro
+
+
+```{r}
+diferencas %>% 
+    mutate(age_difference = abs(age_difference)) %>% 
+    ggplot(aes(x = same_sex, y = age_difference)) + 
+    geom_jitter(width = .1, alpha = .5) 
+```
+
+
 
 ```{r}
 diferencas %>% 
