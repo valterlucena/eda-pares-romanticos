@@ -28,7 +28,16 @@ skimr::skim(diferencas)
 
 ## Algumas perguntas
 
-Maior diferença? 
+### Maior diferença? 
+
+```{r}
+diferencas %>% 
+    mutate(age_difference = abs(age_difference)) %>% 
+    arrange(-age_difference) %>%
+    slice(1)
+```
+Como os valores da variável `age_difference` podem assumir valores negativos se a idade da pessoa do lado esquerdo da relação for menor que o da pessoa da direita, ordenar de forma decrescente os valores absolutos da variável nos permite encontrar a maior diferença de idade. Neste caso, a diferença é de 
+52 anos e acontece no filme Harold and Maude, de 1971.
 
 Diferença típica entre homens e mulheres 
 
@@ -48,7 +57,7 @@ diferencas_pequeno = diferencas %>%
     sample_n(50)
 
 diferencas %>% 
-    filter(! same_sex) %>% 
+    filter(! same_sex) %>%
     ggplot(aes(x = "", 
                y = age_difference)) + 
     geom_jitter(width = .1, alpha = .6, size = .5) 
