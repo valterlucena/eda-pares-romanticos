@@ -163,6 +163,8 @@ diferencas %>%
 
 ```
 
+group_by, filter, mutate e summarise 
+
 
 ```{r}
 
@@ -215,7 +217,7 @@ diferencas %>%
 
 diferencas %>% 
     ggplot(aes(x = age_difference)) + 
-    geom_histogram(bins = 20, fill = "white", color = "darkorange") + 
+    geom_histogram(bins = 50, fill = "white", color = "darkorange") + 
     facet_wrap( ~ tipo_casal)
       
 diferencas %>% 
@@ -247,9 +249,8 @@ diferencas %>%
 diferencas %>%
   mutate(release_year = cut(release_year, 8)) %>% 
   ggplot(aes(x = release_year, age_difference)) +
-  geom_boxplot()
-
-
+  geom_boxplot() +
+  xlab("qualuqer coisa")
   theme(axis.text.x = element_text(angle = 15, hjust = 1))
   coord_flip()
   
