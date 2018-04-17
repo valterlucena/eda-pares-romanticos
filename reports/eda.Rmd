@@ -1,6 +1,8 @@
 ---
 title: "EDA"
-output: html_notebook
+output:
+  html_notebook: default
+  html_document: default
 ---
 
 # Análise das diferenças de idade em hollywood
@@ -36,6 +38,9 @@ skimr::skim(diferencas)
 
 * Há mais/menos diferença de idade quando o casal é do mesmo sexo? 
 
+* De que anos são os ~600 filmes da base? 
+
+* Quais os anos dos filmes mais antigos/recentes?
 
 ## Algumas respostas 
 
@@ -49,8 +54,6 @@ diferencas %>%
     filter(! same_sex) %>% 
     ggplot(aes(x = "", 
                y = age_difference)) +
-  geom_point(alpha = .6)
-  
   geom_jitter(width = .1, alpha = .6, size = .5) 
 
     
@@ -74,6 +77,22 @@ diferencas %>%
 diferencas %>% 
     arrange(age_difference) %>% 
     slice(1)
+```
+
+*Quão frequente é que homens sejam mais velhos que as mulheres? (E vice versa)*
+
+```{r}
+diferencas %>%
+  mutate(age_difference = abs(age_difference)) %>% 
+  ggplot(aes(x = "", y = age_difference)) +
+  geom_boxplot() +
+  geom_jitter(width = .1, alpha = .5)
+
+diferencas %>% 
+    filter(! same_sex) %>% 
+    mutate(homem_mais_velho = age_difference > 0) %>% 
+    ggplot(aes(x = homem_mais_velho)) +
+    geom_bar()
 ```
 
 
@@ -199,9 +218,7 @@ diferencas %>%
     filter(!same_sex) %>% 
     ggplot(aes(x = age_difference)) + 
     geom_histogram(fill = "white", color = "darkorange", bins = 20) +
-    geom_rug()
-
-    geom_rug(sides = "tlbr")
+   geom_rug(sides = "tlbr")
     
     
 diferencas %>% 
@@ -271,7 +288,7 @@ diferencas %>%
     ggplot(aes(x = release_year, age_difference)) + 
     geom_point(alpha = .25)
 
-  filter(!same_sex) %>% 
+  #filter(!same_sex) %>% 
 
 diferencas %>% 
     ggplot(aes(x = actor_1_age, y = age_difference)) + 
