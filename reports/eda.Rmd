@@ -91,8 +91,16 @@ diferencas %>%
 diferencas %>% 
     filter(! same_sex) %>% 
     mutate(homem_mais_velho = age_difference > 0) %>% 
-    ggplot(aes(x = homem_mais_velho)) +
-    geom_bar()
+    group_by(homem_mais_velho) %>% 
+    summarise(n = n()) %>% 
+    mutate(freq = n / sum(n) * 100) %>% 
+    ungroup() %>% 
+    ggplot(aes(x = "", y = freq, fill = homem_mais_velho, label = round(freq, 1))) +
+    geom_col() +
+    geom_text(position = position_stack(vjust = 0.5)) +
+    xlab("Casais") +
+    ylab("Frequência")
+    
 ```
 
 
