@@ -88,6 +88,8 @@ diferencas %>%
   geom_boxplot() +
   geom_jitter(width = .1, alpha = .5)
 
+# gráfico de colunas
+
 diferencas %>% 
     filter(! same_sex) %>% 
     mutate(homem_mais_velho = age_difference > 0) %>% 
@@ -100,8 +102,20 @@ diferencas %>%
     geom_text(position = position_stack(vjust = 0.5)) +
     xlab("Casais") +
     ylab("Frequência")
-    
+
 ```
+
+*Ao longo dos anos, a diferença caiu?*
+
+```{r}
+
+diferencas %>% 
+    mutate(age_difference = abs(age_difference)) %>% 
+    ggplot(aes(x = release_year, y = age_difference)) +
+    geom_jitter(width = .1, alpha = .3)
+
+```
+
 
 
 ## Futuro
