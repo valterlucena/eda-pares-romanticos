@@ -1,6 +1,8 @@
 ---
 title: "EDA"
-output: html_notebook
+output:
+  html_notebook: default
+  html_document: default
 ---
 
 # Análise das diferenças de idade em hollywood
@@ -20,14 +22,13 @@ diferencas = read_csv(here("data/hollywoodagegaps.csv"))
 glimpse(diferencas)
 ```
 
-
-
 ```{r}
 skimr::skim(diferencas)
 ```
 
 ## Algumas perguntas
 
+<<<<<<< HEAD
 ### Maior diferença? 
 
 ```{r}
@@ -38,17 +39,23 @@ diferencas %>%
 ```
 Como os valores da variável `age_difference` podem assumir valores negativos se a idade da pessoa do lado esquerdo da relação for menor que o da pessoa da direita, ordenar de forma decrescente os valores absolutos da variável nos permite encontrar a maior diferença de idade. Neste caso, a diferença é de 
 52 anos e acontece no filme Harold and Maude, de 1971.
+=======
+* Maior diferença? 
 
-Diferença típica entre homens e mulheres 
+* Diferença típica entre homens e mulheres 
+>>>>>>> a2b732745166dd16f8851a062b819acfb1813f87
 
-Quão frequente é que homens sejam mais velhos que as mulheres? (E vice versa)
+* Quão frequente é que homens sejam mais velhos que as mulheres? (E vice versa)
 
-Ao longo dos anos, a diferença caiu? 
+* Ao longo dos anos, a diferença caiu? 
 
-Há mais/menos diferença de idade quando o casal é do mesmo sexo? 
+* Há mais/menos diferença de idade quando o casal é do mesmo sexo? 
 
+* De que anos são os ~600 filmes da base? 
 
-## Algumas respostas
+* Quais os anos dos filmes mais antigos/recentes?
+
+## Algumas respostas 
 
 *Maiores diferenças?*
 
@@ -59,10 +66,13 @@ diferencas_pequeno = diferencas %>%
 diferencas %>% 
     filter(! same_sex) %>%
     ggplot(aes(x = "", 
-               y = age_difference)) + 
-    geom_jitter(width = .1, alpha = .6, size = .5) 
+               y = age_difference)) +
+  geom_jitter(width = .1, alpha = .6, size = .5) 
+
     
 ```
+
+*10 maiores e menores diferenças em casais HT*
 
 ```{r}
 diferencas %>% 
@@ -82,25 +92,196 @@ diferencas %>%
     slice(1)
 ```
 
+*Quão frequente é que homens sejam mais velhos que as mulheres? (E vice versa)*
+
+```{r}
+diferencas %>%
+  mutate(age_difference = abs(age_difference)) %>% 
+  ggplot(aes(x = "", y = age_difference)) +
+  geom_boxplot() +
+  geom_jitter(width = .1, alpha = .5)
+
+# gráfico de colunas
+
+diferencas %>% 
+    filter(! same_sex) %>% 
+    mutate(homem_mais_velho = age_difference > 0) %>% 
+    group_by(homem_mais_velho) %>% 
+    summarise(n = n()) %>% 
+    mutate(freq = n / sum(n) * 100) %>% 
+    ungroup() %>% 
+    ggplot(aes(x = "", y = freq, fill = homem_mais_velho, label = round(freq, 1))) +
+    geom_col() +
+    geom_text(position = position_stack(vjust = 0.5)) +
+    xlab("Casais") +
+    ylab("Frequência")
+
+```
+
+*Ao longo dos anos, a diferença caiu?*
+
+```{r}
+
+diferencas %>% 
+    mutate(age_difference = abs(age_difference)) %>% 
+    ggplot(aes(x = release_year, y = age_difference)) +
+    geom_jitter(width = .1, alpha = .3)
+
+```
+
+
 
 ## Futuro
 
+```{r}
+# exemplos
+
+diferencas %>% 
+  filter(!same_sex) %>% 
+  summary(age_difference)
+
+# scatterplot
+diferencas %>% 
+    ggplot(aes(x = release_year, age_difference)) + 
+    geom_point(alpha = .25)
+
+
+# histogramas
+diferencas %>% 
+    ggplot(aes(x = release_year)) +
+    geom_histogram(fill = "white", color = "darkorange", bins = 20) 
+
+diferencas %>% 
+    ggplot(aes(x = age_difference)) +
+    geom_histogram(fill = "white", color = "darkorange", bins = 20) +
+    geom_rug()
+
+diferencas %>%
+    filter(!same_sex) %>% 
+    ggplot(aes(x = actor_1_age)) +
+    geom_histogram(fill = "white", color = "darkorange", bins = 20) +
+    geom_rug()
+
+
+# density
+diferencas %>% 
+    ggplot(aes(x = abs(age_difference))) + 
+    geom_density() + 
+    geom_rug() 
+
+diferencas %>% 
+    ggplot(aes(x = abs(release_year))) + 
+    geom_density() + 
+    geom_rug() 
+
+# boxplot
+diferencas %>%
+  mutate(age_difference = abs(age_difference)) %>% 
+  ggplot(aes(x = "", y = age_difference)) +
+  geom_boxplot() +
+  geom_jitter(width = .1, alpha = .5) 
+
+diferencas %>%
+  mutate(age_difference = abs(age_difference)) %>% 
+  ggplot(aes(x = same_sex, y = age_difference)) +
+  geom_boxplot() + xlab("Mesmo sexo?") + ylab("Diferença de idade") + ggtitle("Diferença de idade entre casais homo e heteroafetivos")
+
+# violin
+
+diferencas %>%
+  mutate(age_difference = abs(age_difference)) %>% 
+  ggplot(aes(x = "", y = age_difference)) +
+  geom_violin() 
+
+  geom_jitter(width = .1, alpha = .5) 
+
+```
+
+
+*Há mais/menos diferença de idade quando o casal é do mesmo sexo?*
 
 ```{r}
+# scatterplot
+
 diferencas %>% 
     mutate(age_difference = abs(age_difference)) %>% 
     ggplot(aes(x = same_sex, y = age_difference)) + 
     geom_jitter(width = .1, alpha = .5) 
+
+diferencas %>% 
+    mutate(age_difference = abs(age_difference)) %>% 
+    ggplot(aes(x = same_sex, y = age_difference)) + 
+    geom_boxplot()
+
+    geom_point()
+
 ```
 
+group_by, filter, mutate e summarise 
 
 
 ```{r}
+
+diferencas = diferencas %>%  # essa transformação faz sentido levar lá pra cima no código
+    mutate(
+        tipo_casal = case_when(
+            same_sex & actor_1_gender == "man" ~ "ambos homens",
+            same_sex & actor_1_gender == "woman" ~ "ambas mulheres",
+            age_difference >= 0 ~ "homem mais velho", 
+            age_difference < 0 ~ "mulher igual ou mais velha"
+        ))
+
+# boxplot
+
+diferencas %>% 
+    mutate( age_difference = abs(age_difference)) %>% 
+    ggplot(aes(x = tipo_casal, y = age_difference, colour = tipo_casal)) + 
+    geom_boxplot(width = .35, outlier.colour = NA) + 
+    geom_jitter(width = .1, alpha = .5, size = .6) + 
+    coord_flip() + 
+    theme(legend.position = "None")
+```
+
+
+
+*Quão frequente é que homens sejam mais velhos que as mulheres? (E vice versa)*
+
+```{r}
+# histograma & density
+
 diferencas %>% 
     filter(!same_sex) %>% 
     ggplot(aes(x = age_difference)) + 
-    geom_histogram(bins = 20, fill = "white", color = "darkorange")
+    geom_histogram(fill = "white", color = "darkorange", bins = 20) +
+   geom_rug(sides = "tlbr")
+    
+    
+diferencas %>% 
+  filter(!same_sex) %>% 
+  ggplot(aes(x = age_difference)) + 
+  geom_density(fill = "white", color = "darkorange")
+
 ```
+
+
+```{r}
+# histograma & density
+
+diferencas %>% 
+    ggplot(aes(x = age_difference)) + 
+    geom_histogram(bins = 50, fill = "white", color = "darkorange") + 
+    facet_wrap( ~ tipo_casal)
+      
+diferencas %>% 
+    ggplot(aes(x = abs(age_difference), color = tipo_casal)) + 
+    geom_density() + 
+    geom_rug() + 
+    facet_grid(tipo_casal ~ .)
+```
+
+
+
+*10 maiores e menores diferenças no geral*
 
 ```{r}
 diferencas %>% 
@@ -111,16 +292,42 @@ diferencas %>%
     coord_flip()
 ```
 
+
+*Ao longo dos anos, a diferença caiu?* 
+
 ```{r}
+# boxplot % violin plot
+
+diferencas %>%
+  mutate(release_year = cut(release_year, 8)) %>% 
+  ggplot(aes(x = release_year, age_difference)) +
+  geom_boxplot() +
+  xlab("qualuqer coisa")
+  theme(axis.text.x = element_text(angle = 15, hjust = 1))
+  coord_flip()
+  
+  
 diferencas %>% 
-    mutate(release_year = cut(release_year, 8)) %>% 
+    mutate(release_year = cut(release_year, 6)) %>% 
     ggplot(aes(x = release_year, age_difference)) + 
-    geom_boxplot()
+    geom_boxplot(outlier.colour = NA) + 
+    #geom_violin() +
+    geom_jitter(alpha = .1)
+
+#options(scipen = 999)
 ```
 
 ```{r}
+# scatterplot
+diferencas %>% 
+    ggplot(aes(x = release_year, age_difference)) + 
+    geom_point(alpha = .25)
+
+  #filter(!same_sex) %>% 
+
 diferencas %>% 
     ggplot(aes(x = actor_1_age, y = age_difference)) + 
     geom_point(alpha = .5, size = .5)
+
 ```
 
