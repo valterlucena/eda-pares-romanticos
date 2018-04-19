@@ -28,22 +28,9 @@ skimr::skim(diferencas)
 
 ## Algumas perguntas
 
-<<<<<<< HEAD
-### Maior diferença? 
-
-```{r}
-diferencas %>% 
-    mutate(age_difference = abs(age_difference)) %>% 
-    arrange(-age_difference) %>%
-    slice(1)
-```
-Como os valores da variável `age_difference` podem assumir valores negativos se a idade da pessoa do lado esquerdo da relação for menor que o da pessoa da direita, ordenar de forma decrescente os valores absolutos da variável nos permite encontrar a maior diferença de idade. Neste caso, a diferença é de 
-52 anos e acontece no filme Harold and Maude, de 1971.
-=======
 * Maior diferença? 
 
 * Diferença típica entre homens e mulheres 
->>>>>>> a2b732745166dd16f8851a062b819acfb1813f87
 
 * Quão frequente é que homens sejam mais velhos que as mulheres? (E vice versa)
 
@@ -122,14 +109,26 @@ diferencas %>%
 
 ```{r}
 
+diferencas = diferencas %>% 
+    mutate(
+        tipo_casal = case_when(
+            same_sex & actor_1_gender == "man" ~ "ambos homens",
+            same_sex & actor_1_gender == "woman" ~ "ambas mulheres",
+            age_difference >= 0 ~ "homem mais velho", 
+            age_difference < 0 ~ "mulher igual ou mais velha"
+        ))
+
 diferencas %>% 
-    mutate(age_difference = abs(age_difference)) %>% 
-    ggplot(aes(x = release_year, y = age_difference)) +
-    geom_jitter(width = .1, alpha = .3)
+    filter(! same_sex) %>% 
+    mutate(age_difference = abs(age_difference), release_year = cut(release_year, 9)) %>% 
+    ggplot(aes(x = release_year, y = age_difference), fill = age_difference) +
+    geom_col(position = "identity") +
+    ggtitle("Diferenças de idade ao longo dos anos entre casais heterossexuais") +
+    xlab("Ano de lançamento") +
+    ylab("Diferenças de idade") +
+    facet_grid(tipo_casal ~ .)
 
 ```
-
-
 
 ## Futuro
 
@@ -253,8 +252,7 @@ diferencas %>%
     filter(!same_sex) %>% 
     ggplot(aes(x = age_difference)) + 
     geom_histogram(fill = "white", color = "darkorange", bins = 20) +
-   geom_rug(sides = "tlbr")
-    
+    geom_rug(sides = "tlbr")
     
 diferencas %>% 
   filter(!same_sex) %>% 
